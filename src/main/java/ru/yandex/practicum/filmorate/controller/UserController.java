@@ -79,8 +79,8 @@ public class UserController {
             throw new ValidationException("Login не должен быть пустым и содержать пробелы!");
         }
 //имя для отображения может быть пустым — в таком случае будет использован логин;
-        if (user.getName().isBlank()) {
-            user.getName().equals(user.getLogin());
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
         }
 //дата рождения не может быть в будущем.
         if (user.getBirthday().isAfter(LocalDate.now())) {
