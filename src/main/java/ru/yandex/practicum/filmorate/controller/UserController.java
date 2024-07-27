@@ -26,7 +26,7 @@ public class UserController {
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-        users.put(Long.valueOf(user.getId()), user);
+        users.put(user.getId(), user);
         log.info("Отправлен ответ Post / films с телом {}", user);
         return user;
     }
@@ -43,11 +43,11 @@ public class UserController {
         firstUser.setEmail(updateUser.getEmail());
         firstUser.setLogin(updateUser.getLogin());
         firstUser.setName(updateUser.getName());
-        firstUser.setBirthday(updateUser.getBirthday());
-        if (firstUser.getName() == null) {
-            firstUser.setName(updateUser.getLogin());
-        }
-        log.info("Отправлен ответ Put/ films с телом {}", firstUser);
+//        firstUser.setBirthday(updateUser.getBirthday());
+//        if (firstUser.getName() == null) {
+//            firstUser.setName(updateUser.getLogin());
+//        }
+       log.info("Отправлен ответ Put/ films с телом {}", firstUser);
         return firstUser;
     }
 
@@ -69,12 +69,12 @@ public class UserController {
 
     private void validUser(User user) {
 //электронная почта не может быть пустой и должна содержать символ @;
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             log.info("Error");
             throw new ValidationException("Email не должен иметь пробелов, а так же должен содержать символ @!");
         }
         //логин не может быть пустым и содержать пробелы;
-        if (user.getLogin().isBlank()) {
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
             log.info("Error");
             throw new ValidationException("Login не должен быть пустым и содержать пробелы!");
         }
@@ -83,7 +83,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
 //дата рождения не может быть в будущем.
-        if (user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Error");
             throw new ValidationException("Дата рождения не может быть указана в будущем времени!");
         }

@@ -21,6 +21,7 @@ public class FilmController {
     public Film addFilm(@RequestBody Film film) {
         log.info("Пришел Post запрос /films с телом {}", film);
         validFilm(film);
+        //нет обновления хранилища
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Отправлен ответ Post / films с телом {}", film);
@@ -37,9 +38,12 @@ public class FilmController {
         }
         Film secondFilm = setFilm(updateFilm);
         validFilm(secondFilm);
+        log.info("Поступил Put запрос /films с телом {}", updateFilm);
+        films.put(updateFilm.getId(), updateFilm);
         log.info("Отправлен ответ Pге / films с телом {}", secondFilm);
         return secondFilm;
     }
+
 
     private Film setFilm(Film updateFilm) {
         Film film = new Film();
@@ -74,22 +78,22 @@ public class FilmController {
 
     private void validFilm(Film film) {
         //название не может быть пустым;
-        if (film.getName().isBlank()) {
+        if (film.getName()== null || film.getName().isBlank()) {
             log.info("Error");
             throw new ValidationException("Название фильма не может быть пустым!");
         }
         //максимальная длина описания — 200 символов;
-        if (film.getDescription().length() > 200 || film.getDescription() == null) {
+        if (film.getDescription() == null || film.getDescription().length() > 200) {
             log.info("Error");
             throw new ValidationException("Название фильма не может быть пустым!");
         }
         //дата релиза — не раньше 28 декабря 1895 года;
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 20)) || film.getReleaseDate() == null) {
+        if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 20))) {
             log.info("Error");
             throw new ValidationException("Дата не может быть раньше 1895г.!");
         }
         //продолжительность фильма должна быть положительным числом.
-        if (film.getDuration() <= 0 || film.getDuration() == 0) {
+        if (film.getDescription() == null || film.getDuration() <= 0) {
             log.info("Error");
             throw new ValidationException("Продолжительность фильма не может быть меньше 0!");
         }
