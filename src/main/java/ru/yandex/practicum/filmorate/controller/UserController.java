@@ -43,6 +43,10 @@ public class UserController {
         firstUser.setEmail(updateUser.getEmail());
         firstUser.setLogin(updateUser.getLogin());
         firstUser.setName(updateUser.getName());
+        firstUser.setBirthday(updateUser.getBirthday());
+        if (firstUser.getName() == null) {
+            firstUser.setName(updateUser.getLogin());
+        }
         log.info("Отправлен ответ Put/ films с телом {}", firstUser);
         return firstUser;
     }
