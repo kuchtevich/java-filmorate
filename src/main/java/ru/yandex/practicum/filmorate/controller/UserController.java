@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
@@ -22,7 +21,12 @@ public class UserController {
     @PostMapping
     public User addUser(@RequestBody User user) {
         log.info("Пришел Post запрос /films с телом {}", user);
-        users.put(Long.valueOf(user.getId()), user);
+        validUser(user);
+        user.setId(getNextId());
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
+        users.put(user.getId(), user);
         log.info("Отправлен ответ Post / films с телом {}", user);
         return user;
     }
@@ -35,7 +39,7 @@ public class UserController {
             log.info("Такой пользователь уже добавлен");
         }
         User firstUser = users.get(updateUser.getId());
-        //validateUserInput(newUser);
+        validUser(updateUser);
         firstUser.setEmail(updateUser.getEmail());
         firstUser.setLogin(updateUser.getLogin());
         firstUser.setName(updateUser.getName());
@@ -47,7 +51,7 @@ public class UserController {
         return firstUser;
     }
 
-    private long getNextId() {
+    private Long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
                 .mapToLong(id -> id)
@@ -55,6 +59,7 @@ public class UserController {
                 .orElse(0);
         return ++currentMaxId;
     }
+
     //получение списка всех пользователей
     @GetMapping
     public Collection<User> getUser() {
@@ -62,10 +67,9 @@ public class UserController {
         return users.values();
     }
 
-
     private void validUser(User user) {
 //электронная почта не может быть пустой и должна содержать символ @;
-        if (user.getEmail().isBlank() || !user.getEmail().equals("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             log.info("Error");
             throw new ValidationException("Email не должен иметь пробелов, а так же должен содержать символ @!");
         }
@@ -76,11 +80,10 @@ public class UserController {
         }
 //имя для отображения может быть пустым — в таком случае будет использован логин;
         if (user.getName() == null) {
-            user.getName().equals(user.getLogin());
+            user.setName(user.getLogin());
         }
-
 //дата рождения не может быть в будущем.
-        if (user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Error");
             throw new ValidationException("Дата рождения не может быть указана в будущем времени!");
         }

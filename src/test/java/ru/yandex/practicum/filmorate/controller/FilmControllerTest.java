@@ -14,23 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class FilmControllerTest {
-        FilmController filmController;
-        Film film;
+    FilmController filmController;
+    Film film;
 
-        @BeforeEach
-        public void beforeEach() {
-            filmController = new FilmController();
-            film = new Film();
-        }
-
-       @Test
-        @DisplayName("Проверка на добавление фильма")
-        public void testAddFilm() {
-            film.setName("Мстители");
-            film.setDescription("Спасение Земли от инопланетян");
-            film.setReleaseDate(LocalDate.of(1996, 01, 10));
-            film.setDuration(100);
-            filmController.addFilm(film);
-            assertEquals(film.getId(), 1, "Фильм не добавлен");
-        }
+    @BeforeEach
+    public void beforeEach() {
+        filmController = new FilmController();
+        film = new Film();
+        film.setName("Мстители");
+        film.setDescription("Спасение Земли от инопланетян");
+        film.setReleaseDate(LocalDate.of(1996, 01, 10));
+        film.setDuration(100);
     }
+
+    @Test
+    @DisplayName("Проверка на добавление фильма")
+    public void testAddFilm() {
+        filmController.addFilm(film);
+        assertEquals(1, film.getId(), "Фильм не добавлен");
+    }
+}
