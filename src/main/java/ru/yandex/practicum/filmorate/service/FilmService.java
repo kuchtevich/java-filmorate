@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
-import java.util.Set;
-public class FilmService {
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-    @Service
+@Service
+public class FilmService implements FilmStorage {
+
     public void addFilmLike(){
 //вывод 10 наиболее популярных фильмов по количеству лайков.
         //
