@@ -15,9 +15,9 @@ public interface FilmStorage {
 
     Map<Long, Film> getFilms();
 
-    Set<Long> addLike(Long id, Long idUser);
+    Set<Long> addLike(Long id, Long userId);
 
-    Set<Long> deleteLike(Long id, Long idUser);
+    Set<Long> deleteLike(Long id, Long userId);
 
     List<Film> getPopular(Long count);
 
