@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryUserStorage implements UserStorage {
+public abstract class InMemoryUserStorage implements UserStorage {
 private final Map<Long, User> users = new HashMap<>();
 private long currentId = 0;
 

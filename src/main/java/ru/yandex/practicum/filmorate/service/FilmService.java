@@ -1,19 +1,65 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+import java.util.*;
+import java.util.stream.Collectors;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+
 
 @Service
-public class FilmService implements FilmStorage {
+@Slf4j
+public class FilmService {
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
-    public void addFilmLike(){
-//вывод 10 наиболее популярных фильмов по количеству лайков.
-        //
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
+    }
+public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+}
+
+    public void filmLike(Long filmId, Long userId) {
+        Film film = filmStorage.getFilm(filmId);
+        Set<Long> likes = filmStorage.getLikes().get(film.getId());
+        if (likes.contains(userId)) {
+            log.error("Пользователь {} уже поставил лайк фильму {}", userId, filmId);
+            throw new ValidationException("Пользователь уже ставил лайк этому фильму");
+        }
+        User user = userStorage.getUser(userId);
+        likes.add(user.getId());
+        log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
     }
 
-    public void deleteFilmLike(){
-
+    public void deleteLike(Long id, Long userId) {
+        Film film = filmStorage.getFilm(id);
+        Set<Long> likes = filmStorage.getLikes().get(id);
+        User user = userStorage.getUser(userId);
+        if (!likes.remove(user.getId())) {
+            throw new ConditionsNotMetException("Пользователь " + userId + " Не ставил лайк этому фильму");
+        }
+        log.info("У фильма {} был удален лайк от пользователя {}", id, userId);
     }
 
+    public List<Film> getPopular(Long count) {
+            log.info("Было возращено {} популярных фильма", count);
+            return filmStorage.getAllFilms().stream()
+                    .sorted(Comparator.comparingInt(film -> filmStorage.getLikes().get(film.getId()).size()))
+                    .limit(count)
+                    .collect(Collectors.toList()).reversed();
+    }
+
+public Collection <Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+}
 
 }
