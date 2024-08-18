@@ -34,6 +34,7 @@ public class UserService {
     public void deleteUser(Long id) {
         userStorage.deleteUser(id);
     }
+
     public User get(Long userId) {
         final User user = userStorage.getUser(userId);
         if (user == null) {
@@ -71,11 +72,13 @@ public class UserService {
             log.warn("Пользователь {} не имел друга с ID {}", userId, friendId);
         }
     }
+
     public List<User> getAllFriends(Long userId) {
         User user = userStorage.getUser(userId);
         Set<User> userFriendsSet = userStorage.getFriends().get(user.getId());
         return new ArrayList<>(userFriendsSet);
     }
+
     public List<User> getUserFriends(Long userId, Long followerId) {
         User user = userStorage.getUser(userId);
         Set<User> userFriendsSet = userStorage.getFriends().get(user.getId());
