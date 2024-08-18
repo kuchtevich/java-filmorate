@@ -40,6 +40,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getFilm(Long id) {
+        return null;
+    }
+
+    @Override
     public Set<Long> addLike(Long id, Long userId) {
         films.get(id).getLikes().remove(userId);
         return films.get(id).getLikes();
@@ -58,6 +63,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .limit(count)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public Map<Long, Set<Long>> getLikes() {
+        return null;
     }
 
     @Override
