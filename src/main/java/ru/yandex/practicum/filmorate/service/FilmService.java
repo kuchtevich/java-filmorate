@@ -28,7 +28,7 @@ public class FilmService {
     public Film addFilm(Film film) {
         return filmStorage.addFilm(film);
     }
-public Film updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
 }
 
@@ -62,7 +62,7 @@ public Film updateFilm(Film film) {
                     .collect(Collectors.toList()).reversed();
     }
 
-public Collection <Film> getAllFilms() {
+    public Collection <Film> getAllFilms() {
         return filmStorage.getAllFilms();
 }
 
