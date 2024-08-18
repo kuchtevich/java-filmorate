@@ -25,12 +25,14 @@ public class FilmService {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
+
     public Film addFilm(Film film) {
         return filmStorage.addFilm(film);
     }
+
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
-}
+    }
 
     public void filmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
@@ -55,15 +57,15 @@ public class FilmService {
     }
 
     public List<Film> getPopular(Long count) {
-            log.info("Было возращено {} популярных фильма", count);
-            return filmStorage.getAllFilms().stream()
-                    .sorted(Comparator.comparingInt(film -> filmStorage.getLikes().get(film.getId()).size()))
-                    .limit(count)
-                    .collect(Collectors.toList()).reversed();
+        log.info("Было возращено {} популярных фильма", count);
+        return filmStorage.getAllFilms().stream()
+                .sorted(Comparator.comparingInt(film -> filmStorage.getLikes().get(film.getId()).size()))
+                .limit(count)
+                .collect(Collectors.toList()).reversed();
     }
 
-    public Collection <Film> getAllFilms() {
+    public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
-}
+    }
 
 }
