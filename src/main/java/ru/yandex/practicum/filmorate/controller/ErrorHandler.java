@@ -26,7 +26,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleConditionsNotMet(final ConditionsNotMetException e) {
+    public ErrorResponse handleConditionsNotMet(final NotFoundException e) {
         return new ErrorResponse(
                 e.getMessage()
         );

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -58,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User userGet(Long id) {
         if (users.get(id) == null) {
-            throw new ConditionsNotMetException("id не найден");
+            throw new NotFoundException("id не найден");
         }
         return users.get(id);
     }
@@ -66,7 +67,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(Long id) {
         if (users.get(id) == null) {
-            throw new ConditionsNotMetException("id не найден");
+            throw new NotFoundException("id не найден");
         }
         log.info("Пользователь удален");
         users.remove(id);

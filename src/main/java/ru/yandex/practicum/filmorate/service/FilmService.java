@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -61,7 +62,7 @@ public class FilmService {
         Set<Long> likes = filmStorage.getLikes().get(id);
         User user = userStorage.userGet(userId);
         if (!likes.remove(user.getId())) {
-            throw new ConditionsNotMetException("Пользователь " + userId + " Не ставил лайк этому фильму");
+            throw new NotFoundException("Пользователь " + userId + " Не ставил лайк этому фильму");
         }
         log.info("У фильма {} был удален лайк от пользователя {}", id, userId);
     }

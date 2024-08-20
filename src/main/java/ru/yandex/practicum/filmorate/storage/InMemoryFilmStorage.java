@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -38,7 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film updateFilm(Film newFilm) {
         if (newFilm.getId() == null || films.get(newFilm.getId()) == null) {
             log.error("Фильм с id " + newFilm.getId() + " не найден");
-            throw new ConditionsNotMetException("id не найден");
+            throw new NotFoundException("id не найден");
         }
         Film oldFilm = setFilm(newFilm);
         validFilm(newFilm);
@@ -52,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(Long id) {
         if (films.get(id) == null) {
-            throw new ConditionsNotMetException("id не найден");
+            throw new NotFoundException("id не найден");
         }
         return films.get(id);
     }
@@ -60,7 +61,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void filmDelete(Long id) {
         if (films.get(id) == null) {
-            throw new ConditionsNotMetException("id не найден");
+            throw new NotFoundException("id не найден");
         }
         log.info("Фильм удален");
         films.remove(id);
