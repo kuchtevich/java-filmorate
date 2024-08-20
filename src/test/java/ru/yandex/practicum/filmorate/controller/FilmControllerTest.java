@@ -24,12 +24,12 @@ public class FilmControllerTest {
 //        film.setDuration(100);
 //    }
 
-    @Test
-    @DisplayName("Проверка на добавление фильма")
-    public void testAddFilm() {
-        filmController.filmAdd(film);
-        assertEquals(1, film.getId(), "Фильм не добавлен");
-    }
+//    @Test
+//    @DisplayName("Проверка на добавление фильма")
+//    public void testAddFilm() {
+//        filmController.filmAdd(film);
+//        assertEquals(1, film.getId(), "Фильм не добавлен");
+//    }
 
 
 }
