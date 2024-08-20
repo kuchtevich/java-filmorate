@@ -30,7 +30,6 @@ public class UserControllerTest {
         Assertions.assertEquals(secondUser.getLogin(), addUser.getLogin());
         Assertions.assertEquals(secondUser.getName(), addUser.getName());
         Assertions.assertEquals(secondUser.getBirthday(), addUser.getBirthday());
-        System.out.println(userController.getUser());
     }
 
 }

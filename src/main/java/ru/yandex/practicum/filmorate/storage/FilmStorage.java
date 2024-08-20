@@ -13,17 +13,11 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    Map<Long, Film> getFilms();
-
     Film getFilm(Long id);
 
-    Set<Long> addLike(Long id, Long userId);
+    Collection<Film> getAllFilms();
 
-    Set<Long> deleteLike(Long id, Long userId);
-
-    List<Film> getPopular(Long count);
+    void filmDelete(Long id);
 
     Map<Long, Set<Long>> getLikes();
-
-    Collection<Film> getAllFilms();
 }

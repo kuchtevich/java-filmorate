@@ -3,18 +3,16 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
 public class UserService {
+
     private final UserStorage userStorage;
 
     @Autowired
@@ -27,45 +25,32 @@ public class UserService {
     }
 
     public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userStorage.allUsers();
     }
 
+    public User userUpdate(User newUser) {
+        return userStorage.updateUser(newUser);
+    }
 
-    public void deleteUser(Long id) {
+    public void userDelete(Long id) {
         userStorage.deleteUser(id);
     }
 
-    public User get(Long userId) {
-        final User user = userStorage.getUser(userId);
-        if (user == null) {
-            throw new NotFoundException("Пользователь" + userId + "не найден.");
+    public void addToFriend(Long userId, Long otherUserId) {
+        User user = userStorage.userGet(userId);
+        User otherUser = userStorage.userGet(otherUserId);
+        if (userStorage.getFriends().get(user.getId()).contains(otherUser)) {
+            log.error("Ошибка при добавлении друга: Пользователи {} и {} уже являются друзьями.", userId, otherUserId);
+            throw new ValidationException("Пользователи уже в друзьях");
         }
-        return user;
+        userStorage.getFriends().get(user.getId()).add(userStorage.userGet(otherUserId));
+        userStorage.getFriends().get(otherUser.getId()).add(userStorage.userGet(userId));
+        log.info("Пользователь {} добавил в друзья пользователя {}", userId, otherUserId);
     }
 
-
-    public void updateUser(User user) {
-        if (userStorage.getUser(user.getId()) == null) {
-            throw new RuntimeException("Пользователь не найден!");
-        }
-        userStorage.updateUser(user);
-    }
-
-    public void addFriends(Long userId, Long friendId) {
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
-        if (userStorage.getUser(userId) == null) {
-            throw new RuntimeException("Пользователь не найден" + userId);
-        }
-        final User friends = userStorage.getUser(friendId);
-        if (userStorage.getUser(friendId) == null) {
-            throw new RuntimeException("Друг не найден" + friendId);
-        }
-    }
-
-    public void deleteFriends(Long userId, Long friendId) {
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
+    public void deleteFriend(Long userId, Long friendId) {
+        User user = userStorage.userGet(userId);
+        User friend = userStorage.userGet(friendId);
         if (userStorage.getFriends().get(user.getId()).remove(friend) && userStorage.getFriends().get(friend.getId()).remove(user)) {
             log.info("Пользователь {} успешно удалил пользователя {}", userId, friendId);
         } else {
@@ -73,15 +58,17 @@ public class UserService {
         }
     }
 
-    public List<User> getAllFriends(Long userId) {
-        User user = userStorage.getUser(userId);
+    public List<User> allUserFriends(Long userId) {
+        User user = userStorage.userGet(userId);
         Set<User> userFriendsSet = userStorage.getFriends().get(user.getId());
         return new ArrayList<>(userFriendsSet);
     }
 
-    public List<User> getUserFriends(Long userId, Long followerId) {
-        User user = userStorage.getUser(userId);
-        Set<User> userFriendsSet = userStorage.getFriends().get(user.getId());
-        return new ArrayList<>(userFriendsSet);
+    public List<User> commonFriends(Long userId, Long otherUserId) {
+        List<User> userFriends = allUserFriends(userId);
+        List<User> otherUserFriends = allUserFriends(otherUserId);
+        List<User> commonFriends = new ArrayList<>(userFriends);
+        commonFriends.retainAll(otherUserFriends);
+        return commonFriends;
     }
 }
