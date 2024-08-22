@@ -20,7 +20,6 @@ public abstract class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User newUser) {
-        checkUser(newUser);
         Map<Long, Set<User>> friends = new HashMap<>();
         Map<Long, User> users = new HashMap<>();
         validUser(newUser);
@@ -37,7 +36,6 @@ public abstract class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User newUser) {
-        checkUser(newUser);
         if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
             log.error("Пользователь с id " + newUser.getId() + " не найден");
             throw new NotFoundException("id не найден");
@@ -96,11 +94,12 @@ public abstract class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    public void checkUser(User newUser) {
-        if (newUser.getName() == null) {
-            newUser.setName(newUser.getLogin());
-        }
-    }
+//    @Override
+//    public void checkUser(Long id) {
+//        if (users.get(id) == null) {
+//            throw new NotFoundException("Пользователь по id: " + id + " не существует");
+//        }
+//    }
 
     private long getNextId() {
         return ++currentMaxId;

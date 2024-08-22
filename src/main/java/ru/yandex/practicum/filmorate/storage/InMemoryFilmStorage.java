@@ -75,6 +75,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+
     private Film setFilm(Film filmRequest) {
         Film film = new Film();
         if (films.get(filmRequest.getId()) == null) {
@@ -111,15 +112,15 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Продолжительность фильма не может быть меньше 0!");
         }
     }
+//    @Override
+//    public void checkFilm(Long id) {
+//        if (films.get(id) == null) {
+//            throw new NotFoundException("Фильма по id: " + id + " не существует");
+//        }
+//    }
 
     private long getNextId() {
         return ++currentId;
-    }
-    @Override
-    public void checkFilm(Long id) {
-        if (films.get(id) == null) {
-            throw new NotFoundException("Фильма по id: " + id + " не существует");
-        }
     }
 
 }
