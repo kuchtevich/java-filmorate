@@ -58,7 +58,8 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User userGet(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException(id +"id не найден");
+            throw new NotFoundException("id не найден");
+            log.info(id);
         }
         return users.get(id);
     }
@@ -66,7 +67,8 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException(id +"id не найден");
+            throw new NotFoundException("id не найден");
+            log.info(id);
         }
         log.info("Пользователь удален");
         users.remove(id);
