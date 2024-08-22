@@ -36,12 +36,6 @@ public class UserControllerTest {
         assertEquals(secondUser.getBirthday(), addUser.getBirthday());
         System.out.println(userController.getAllUsers());
 
-//        Assertions.assertNotNull(addUser);
-//        Assertions.assertNotNull(addUser.getId());
-//        Assertions.assertEquals(secondUser.getEmail(), addUser.getEmail());
-//        Assertions.assertEquals(secondUser.getLogin(), addUser.getLogin());
-//        Assertions.assertEquals(secondUser.getName(), addUser.getName());
-//        Assertions.assertEquals(secondUser.getBirthday(), addUser.getBirthday());
     }
 
 }

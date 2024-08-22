@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage {
+public abstract class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -114,6 +114,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private long getNextId() {
         return ++currentId;
+    }
+    @Override
+    public void checkFilm(Long id) {
+        if (films.get(id) == null) {
+            throw new NotFoundException("Фильма по id: " + id + " не существует");
+        }
     }
 
 }

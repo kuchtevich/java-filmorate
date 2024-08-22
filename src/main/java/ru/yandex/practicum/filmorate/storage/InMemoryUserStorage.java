@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage {
+public abstract class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
     @Getter
     private final Map<Long, Set<User>> friends = new HashMap<>();
@@ -20,6 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User newUser) {
+        checkUser(newUser);
         Map<Long, Set<User>> friends = new HashMap<>();
         Map<Long, User> users = new HashMap<>();
         validUser(newUser);
@@ -36,6 +37,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User newUser) {
+        checkUser(newUser);
         if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
             log.error("Пользователь с id " + newUser.getId() + " не найден");
             throw new NotFoundException("id не найден");
@@ -91,6 +93,12 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Error");
             throw new ValidationException("Дата рождения не может быть указана в будущем времени!");
+        }
+    }
+
+    public void checkUser(User newUser) {
+        if (newUser.getName() == null) {
+            newUser.setName(newUser.getLogin());
         }
     }
 
