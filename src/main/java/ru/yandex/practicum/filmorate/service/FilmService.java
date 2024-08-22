@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -51,16 +50,14 @@ public class FilmService {
             log.error("Пользователь {} уже поставил лайк фильму {}", userId, filmId);
             throw new ValidationException("Пользователь уже ставил лайк этому фильму");
         }
-        User user = userStorage.userGet(userId);
-        likes.add(user.getId());
+        likes.add(userId);
         log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
     }
 
     public void deleteLike(Long id, Long userId) {
         filmStorage.getFilm(id);
-        Set<Long> likes = filmStorage.getLikes().get(id);
-        User user = userStorage.userGet(userId);
-        if (!likes.remove(user.getId())) {
+        Set<Long> likes = filmStorage.getLikes().get(userId);
+        if (!likes.remove(userId)) {
             throw new NotFoundException("Пользователь " + userId + " Не ставил лайк этому фильму");
         }
         log.info("У фильма {} был удален лайк от пользователя {}", id, userId);

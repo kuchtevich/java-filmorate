@@ -11,7 +11,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
+
 public class UserController {
 
     private final UserService userService;

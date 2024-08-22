@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -15,11 +14,12 @@ import java.util.*;
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
+
     private final Map<Long, Film> films = new HashMap<>();
 
-    @Getter
-    private final Map<Long, Set<Long>> likes = new HashMap<>();
     private long currentId = 0;
+
+
 
     private long nextId() {
         return ++currentId;
@@ -27,6 +27,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film filmRequest) {
+        Map<Long, Set<Long>> likes = new HashMap<>();
         validFilm(filmRequest);
         Film film = setFilm(filmRequest);
         films.put(film.getId(), film);
@@ -52,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException("id не найден");
+            throw new NotFoundException(id +"id не найден");
         }
         return films.get(id);
     }
@@ -60,10 +61,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void filmDelete(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException("id не найден");
+            throw new NotFoundException(id + "id не найден");
         }
         log.info("Фильм удален");
         films.remove(id);
+    }
+
+    @Override
+    public Map<Long, Set<Long>> getLikes() {
+        return null;
     }
 
     @Override

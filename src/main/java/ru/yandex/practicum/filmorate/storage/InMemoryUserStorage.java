@@ -13,15 +13,15 @@ import java.util.*;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-
     private final Map<Long, User> users = new HashMap<>();
-
     @Getter
     private final Map<Long, Set<User>> friends = new HashMap<>();
     private long currentMaxId;
 
     @Override
     public User addUser(User newUser) {
+        Map<Long, Set<User>> friends = new HashMap<>();
+        Map<Long, User> users = new HashMap<>();
         validUser(newUser);
         newUser.setId(getNextId());
         users.put(newUser.getId(), newUser);
@@ -58,7 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User userGet(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException("id не найден");
+            throw new NotFoundException(id +"id не найден");
         }
         return users.get(id);
     }
@@ -66,7 +66,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException("id не найден");
+            throw new NotFoundException(id +"id не найден");
         }
         log.info("Пользователь удален");
         users.remove(id);

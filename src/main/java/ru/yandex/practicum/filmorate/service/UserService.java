@@ -41,7 +41,7 @@ public class UserService {
         User otherUser = userStorage.userGet(otherUserId);
         if (userStorage.getFriends().get(user.getId()).contains(otherUser)) {
             log.error("Ошибка при добавлении друга: Пользователи {} и {} уже являются друзьями.", userId, otherUserId);
-            throw new ValidationException("Пользователи уже в друзьях");
+            throw new ValidationException("Пользователи уже в друзьях" + otherUserId);
         }
         userStorage.getFriends().get(user.getId()).add(userStorage.userGet(otherUserId));
         userStorage.getFriends().get(otherUser.getId()).add(userStorage.userGet(userId));
