@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 
-
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
@@ -18,7 +17,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
 
     private long currentId = 0;
-
 
 
     private long nextId() {
@@ -53,7 +51,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException(id +"id не найден");
+            throw new NotFoundException("id не найден", id);
         }
         return films.get(id);
     }
@@ -61,7 +59,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void filmDelete(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException(id + "id не найден");
+            throw new NotFoundException("id не найден", id);
         }
         log.info("Фильм удален");
         films.remove(id);
