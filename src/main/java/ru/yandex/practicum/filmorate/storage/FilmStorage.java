@@ -20,5 +20,5 @@ public interface FilmStorage {
 
     Map<Long, Set<Long>> getLikes();
 
-//    void checkFilm(Long id);
+    void checkFilm(Long id);
 }

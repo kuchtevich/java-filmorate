@@ -112,12 +112,12 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Продолжительность фильма не может быть меньше 0!");
         }
     }
-//    @Override
-//    public void checkFilm(Long id) {
-//        if (films.get(id) == null) {
-//            throw new NotFoundException("Фильма по id: " + id + " не существует");
-//        }
-//    }
+    @Override
+    public void checkFilm(Long id) {
+        if (films.get(id) == null) {
+            throw new NotFoundException("Фильма по id: " + id + " не существует");
+        }
+    }
 
     private long getNextId() {
         return ++currentId;
