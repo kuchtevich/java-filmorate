@@ -51,8 +51,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilm(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException("id не найден");
-            log.info(id);
+            throw new NotFoundException("id не найден" + films.get(id));
         }
         return films.get(id);
     }
@@ -60,8 +59,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void filmDelete(Long id) {
         if (films.get(id) == null) {
-            throw new NotFoundException("id не найден");
-            log.info(id);
+            throw new NotFoundException("id не найден" + films.get(id));
         }
         log.info("Фильм удален");
         films.remove(id);
