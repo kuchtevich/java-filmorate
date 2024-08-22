@@ -57,6 +57,7 @@ public abstract class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User userGet(Long id) {
+        checkUser(id);
         if (users.get(id) == null) {
             throw new NotFoundException("id не найден" + users.get(id));
         }
@@ -65,6 +66,7 @@ public abstract class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteUser(Long id) {
+        checkUser(id);
         if (users.get(id) == null) {
             throw new NotFoundException("id не найден" + users.get(id));
         }
@@ -94,12 +96,12 @@ public abstract class InMemoryUserStorage implements UserStorage {
         }
     }
 
-//    @Override
-//    public void checkUser(Long id) {
-//        if (users.get(id) == null) {
-//            throw new NotFoundException("Пользователь по id: " + id + " не существует");
-//        }
-//    }
+    @Override
+    public void checkUser(Long id) {
+        if (users.get(id) == null) {
+            throw new NotFoundException("Пользователь по id: " + id + " не существует");
+        }
+    }
 
     private long getNextId() {
         return ++currentMaxId;

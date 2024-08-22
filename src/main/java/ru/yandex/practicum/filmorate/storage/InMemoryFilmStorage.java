@@ -50,6 +50,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long id) {
+        checkFilm(id);
         if (films.get(id) == null) {
             throw new NotFoundException("id не найден" + films.get(id));
         }
@@ -58,6 +59,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void filmDelete(Long id) {
+        checkFilm(id);
         if (films.get(id) == null) {
             throw new NotFoundException("id не найден" + films.get(id));
         }
