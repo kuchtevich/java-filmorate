@@ -52,7 +52,7 @@ public class FilmService {
             throw new ValidationException("Пользователь уже ставил лайк этому фильму");
         }
         if (userId == null) {
-            throw new ConditionsNotMetException("Пользователь не найден.")
+            throw new ConditionsNotMetException("Пользователь не найден.");
         }
         likes.add(userId);
         log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
@@ -62,7 +62,7 @@ public class FilmService {
         filmStorage.getFilm(id);
         Set<Long> likes = filmStorage.getLikes().get(userId);
         if (userId == null) {
-            throw new ConditionsNotMetException("Пользователь не найден.")
+            throw new ConditionsNotMetException("Пользователь не найден.");
         }
         userStorage.userGet(userId);
         if (!likes.remove(userId)) {
