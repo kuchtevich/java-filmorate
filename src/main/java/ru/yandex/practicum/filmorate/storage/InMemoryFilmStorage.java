@@ -47,7 +47,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return oldFilm;
     }
 
-
     @Override
     public Film getFilm(Long id) {
         checkFilm(id);
@@ -114,6 +113,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Продолжительность фильма не может быть меньше 0!");
         }
     }
+
     @Override
     public void checkFilm(Long id) {
         if (films.get(id) == null) {
