@@ -19,5 +19,4 @@ public interface UserStorage {
 
     User userGet(Long id);
 
-    void checkUser(Long id);
 }

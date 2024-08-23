@@ -56,7 +56,6 @@ public class UserService {
             log.info("Пользователь {} успешно удалил пользователя {}", userId, friendId);
         } else {
             log.warn("Пользователь {} не имел друга с ID {}", userId, friendId);
-            throw new NotFoundException("Пользователь не найден.");
         }
     }
 

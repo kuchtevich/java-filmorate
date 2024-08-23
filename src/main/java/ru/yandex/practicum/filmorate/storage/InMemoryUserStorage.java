@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -20,13 +19,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User newUser) {
-            Map<Long, Set<User>> friends = new HashMap<>();
-            Map<Long, User> users = new HashMap<>();
-            validUser(newUser);
-            newUser.setId(getNextId());
-            users.put(newUser.getId(), newUser);
-            friends.put(newUser.getId(), new HashSet<>());
-            return newUser;
+        validUser(newUser);
+        newUser.setId(getNextId());
+        users.put(newUser.getId(), newUser);
+        friends.put(newUser.getId(), new HashSet<>());
+        return newUser;
     }
 
     @Override
@@ -57,7 +54,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User userGet(Long id) {
-        checkUser(id);
         if (users.get(id) == null) {
             throw new NotFoundException("id не найден" + users.get(id));
         }
@@ -66,7 +62,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteUser(Long id) {
-        checkUser(id);
         if (users.get(id) == null) {
             throw new NotFoundException("id не найден" + users.get(id));
         }
@@ -93,13 +88,6 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Error");
             throw new ValidationException("Дата рождения не может быть указана в будущем времени!");
-        }
-    }
-
-    @Override
-    public void checkUser(Long id) {
-        if (users.get(id) == null) {
-            throw new NotFoundException("Пользователь по id: " + id + " не существует");
         }
     }
 

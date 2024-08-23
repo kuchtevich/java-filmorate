@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -16,16 +16,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
 
+    @Getter
+    private final Map<Long, Set<Long>> likes = new HashMap<>();
+
     private long currentId = 0;
-
-
-    private long nextId() {
-        return ++currentId;
-    }
 
     @Override
     public Film addFilm(Film filmRequest) {
-        Map<Long, Set<Long>> likes = new HashMap<>();
         validFilm(filmRequest);
         Film film = setFilm(filmRequest);
         films.put(film.getId(), film);
@@ -35,7 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film newFilm) {
-        if (newFilm.getId() == null || !films.containsKey(newFilm.getId())) {
+        if (newFilm.getId() == null || films.get(newFilm.getId()) == null) {
             log.error("Фильм с id " + newFilm.getId() + " не найден");
             throw new NotFoundException("id не найден");
         }
@@ -49,7 +46,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long id) {
-        checkFilm(id);
         if (films.get(id) == null) {
             throw new NotFoundException("id не найден" + films.get(id));
         }
@@ -58,24 +54,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void filmDelete(Long id) {
-        checkFilm(id);
         if (films.get(id) == null) {
-            throw new NotFoundException("id не найден" + films.get(id));
+            log.info("Фильма с таким ID " + id + " не существует");
         }
         log.info("Фильм удален");
         films.remove(id);
     }
 
     @Override
-    public Map<Long, Set<Long>> getLikes() {
-        return null;
-    }
-
-    @Override
     public Collection<Film> getAllFilms() {
         return films.values();
     }
-
 
     private Film setFilm(Film filmRequest) {
         Film film = new Film();
@@ -111,13 +100,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getDescription() == null || film.getDuration() <= 0) {
             log.info("Error");
             throw new ValidationException("Продолжительность фильма не может быть меньше 0!");
-        }
-    }
-
-    @Override
-    public void checkFilm(Long id) {
-        if (films.get(id) == null) {
-            throw new NotFoundException("Фильма по id: " + id + " не существует");
         }
     }
 
