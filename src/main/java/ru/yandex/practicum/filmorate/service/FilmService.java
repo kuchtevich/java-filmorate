@@ -47,6 +47,7 @@ public class FilmService {
     public void filmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
         Set<Long> likes = filmStorage.getLikes().get(film.getId());
+        userStorage.userGet(userId);
         if (likes.contains(userId)) {
             log.error("Пользователь {} уже поставил лайк фильму {}", userId, filmId);
             throw new ValidationException("Пользователь уже ставил лайк этому фильму");
@@ -61,6 +62,7 @@ public class FilmService {
     public void deleteLike(Long id, Long userId) {
         filmStorage.getFilm(id);
         Set<Long> likes = filmStorage.getLikes().get(userId);
+        userStorage.userGet(userId);
         if (userId == null) {
             throw new ConditionsNotMetException("Пользователь не найден.");
         }
