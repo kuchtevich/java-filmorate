@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -59,18 +60,14 @@ public class FilmService {
         log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
     }
 
-    public void deleteLike(Long id, Long userId) {
-        filmStorage.getFilm(id);
-        Set<Long> likes = filmStorage.getLikes().get(userId);
-        userStorage.userGet(userId);
-        if (userId == null) {
-            throw new ConditionsNotMetException("Пользователь не найден.");
-        }
-        userStorage.userGet(userId);
-        if (!likes.remove(userId)) {
+    public void deleteLike(Long filmId, Long userId) {
+        filmStorage.getFilm(filmId);
+        Set<Long> likes = filmStorage.getLikes().get(filmId);
+        User user = userStorage.userGet(userId);
+        if (!likes.remove(user.getId())) {
             throw new NotFoundException("Пользователь " + userId + " Не ставил лайк этому фильму");
         }
-        log.info("У фильма {} был удален лайк от пользователя {}", id, userId);
+        log.info("У фильма {} был удален лайк от пользователя {}", filmId, userId);
     }
 
     public List<Film> getPopular(Long count) {
