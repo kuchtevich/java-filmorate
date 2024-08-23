@@ -20,13 +20,13 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User newUser) {
-        Map<Long, Set<User>> friends = new HashMap<>();
-        Map<Long, User> users = new HashMap<>();
-        validUser(newUser);
-        newUser.setId(getNextId());
-        users.put(newUser.getId(), newUser);
-        friends.put(newUser.getId(), new HashSet<>());
-        return newUser;
+            Map<Long, Set<User>> friends = new HashMap<>();
+            Map<Long, User> users = new HashMap<>();
+            validUser(newUser);
+            newUser.setId(getNextId());
+            users.put(newUser.getId(), newUser);
+            friends.put(newUser.getId(), new HashSet<>());
+            return newUser;
     }
 
     @Override
