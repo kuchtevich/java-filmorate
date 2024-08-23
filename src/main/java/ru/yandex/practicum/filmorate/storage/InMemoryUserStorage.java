@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public abstract class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
     @Getter
     private final Map<Long, Set<User>> friends = new HashMap<>();
