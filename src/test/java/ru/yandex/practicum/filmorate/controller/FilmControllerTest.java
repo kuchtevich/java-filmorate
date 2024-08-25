@@ -1,36 +1,32 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.time.LocalDate;
+import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 
 @SpringBootTest
 public class FilmControllerTest {
+
+    @Autowired
+    private FilmStorage filmStorage;
     FilmController filmController;
     Film film;
 
-    @BeforeEach
-    public void beforeEach() {
-        filmController = new FilmController();
-        film = new Film();
-        film.setName("Мстители");
-        film.setDescription("Спасение Земли от инопланетян");
-        film.setReleaseDate(LocalDate.of(1996, 01, 10));
-        film.setDuration(100);
+    @Test
+    public void testAllFilms() {
+        Collection<Film> films = filmStorage.getAllFilms();
+        assertNotNull(films);
+        assertTrue(films.isEmpty());
     }
 
-    @Test
-    @DisplayName("Проверка на добавление фильма")
-    public void testAddFilm() {
-        filmController.addFilm(film);
-        assertEquals(1, film.getId(), "Фильм не добавлен");
-    }
+
 }

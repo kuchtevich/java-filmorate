@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 @SpringBootTest
@@ -23,14 +25,17 @@ public class UserControllerTest {
         secondUser.setName("UserOne");
         secondUser.setBirthday(LocalDate.of(1996, 1, 10));
 
+
         User addUser = userController.addUser(secondUser);
-        Assertions.assertNotNull(addUser);
-        Assertions.assertNotNull(addUser.getId());
-        Assertions.assertEquals(secondUser.getEmail(), addUser.getEmail());
-        Assertions.assertEquals(secondUser.getLogin(), addUser.getLogin());
-        Assertions.assertEquals(secondUser.getName(), addUser.getName());
-        Assertions.assertEquals(secondUser.getBirthday(), addUser.getBirthday());
-        System.out.println(userController.getUser());
+
+        assertNotNull(addUser);
+        assertNotNull(addUser.getId());
+        assertEquals(secondUser.getEmail(), addUser.getEmail());
+        assertEquals(secondUser.getLogin(), addUser.getLogin());
+        assertEquals(secondUser.getName(), addUser.getName());
+        assertEquals(secondUser.getBirthday(), addUser.getBirthday());
+        System.out.println(userController.getAllUsers());
+
     }
 
 }
