@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.H2;
 
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -8,7 +7,6 @@ import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
 import java.util.Map;
-
 
 @Repository
 public class H2MpaStorage implements MpaStorage {
