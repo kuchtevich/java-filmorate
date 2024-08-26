@@ -20,7 +20,7 @@ public class H2GenreStorage implements GenreStorage {
     @Override
     public Optional<Genre> genreById(Long id) {
         return Optional.ofNullable(jdbcTemplate.queryForObject("genre_id, name from public.genre where genre_id = ?", (rs, rowNum) -> {
-            Long genre_id = rs.getLong("genre_id");
+            Long genreId = rs.getLong("genre_id");
             String name = rs.getString("name");
             return new Genre();
         }, id));

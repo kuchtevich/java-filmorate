@@ -25,9 +25,9 @@ public class H2MpaStorage implements MpaStorage {
         String sql = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = :mpa_id";
         Map<String, Object> params = Map.of("mpa_id", id);
         return jdbcTemplate.query("select mpa_id, mpa_name from public.mpa", (rs, rowNum) -> {
-            Long mpa_id = rs.getLong("mpa_id");
+            Long mpaId = rs.getLong("mpa_id");
             String name = rs.getString("mpa_name");
-            return new Mpa(mpa_id, name);
+            return new Mpa(mpaId, name);
         });
     }
 
