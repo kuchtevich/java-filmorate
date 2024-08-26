@@ -21,9 +21,11 @@ import java.util.Set;
 @Repository("H2FilmStorage")
 public class H2FilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+
     public H2FilmStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public Film addFilm(Film film) {
         final String INSERT_MESSAGE_SQL = "insert into public.users (film_name, description, duration, releaseDate) values (?, ?, ?, ?)";
