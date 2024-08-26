@@ -66,7 +66,7 @@ public class H2FilmStorage implements FilmStorage {
     @Override
     public Film getFilm(Long id) {
         return jdbcTemplate.queryForObject("film_id, description, duration, film_name, release from public.film where film_id = ?", (rs, rowNum) -> {
-            Long film_id = rs.getLong("film_id");
+            Long filmId = rs.getLong("film_id");
             String description = rs.getString("description");
             String name = rs.getString("film_name");
             LocalDate releaseDate = rs.getDate("release").toLocalDate();
