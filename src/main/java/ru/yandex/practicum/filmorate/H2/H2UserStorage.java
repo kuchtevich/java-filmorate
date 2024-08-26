@@ -6,6 +6,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -23,9 +25,10 @@ public class H2UserStorage implements UserStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
     public Map<Long, Set<User>> getFriends() {
-        return Map.of();
+        return null;
     }
 
     @Override
@@ -53,7 +56,16 @@ public class H2UserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        return null;
+        final String sql = "UPDATE users SET user_name =:user_name,login =:login," +
+                "email=:email,birthday=:birthday WHERE user_id = :user_id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("user_id", user.getId())
+                .addValue("user_name", user.getName())
+                .addValue("login", user.getLogin())
+                .addValue("email", user.getEmail())
+                .addValue("birthday", user.getBirthday());
+        jdbcTemplate.update(sql, parameterSource);
+        return user;
     }
 
     @Override
