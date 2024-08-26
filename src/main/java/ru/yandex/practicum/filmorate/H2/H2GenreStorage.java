@@ -13,6 +13,7 @@ import java.util.Optional;
 public class H2GenreStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
+
     public H2GenreStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
