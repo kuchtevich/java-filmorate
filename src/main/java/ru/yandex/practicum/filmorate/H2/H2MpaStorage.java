@@ -12,13 +12,11 @@ import java.util.Map;
 
 @Repository
 public class H2MpaStorage implements MpaStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     public H2MpaStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     @Override
     public List<Mpa> findMpaById(Long id) {
