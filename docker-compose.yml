@@ -1,0 +1,14 @@
+db:
+  image: postgres:16.1
+  container_name: filmorate-db
+  ports:
+    - "6541:5432"
+  environment:
+    - POSTGRES_PASSWORD=filmorate
+    - POSTGRES_USER=filmorate
+    - POSTGRES_DB=filmorate
+    - TZ=Europe/Moscow
+  healthcheck:
+    test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+    timeout: 5s
+    invertal: 5s
