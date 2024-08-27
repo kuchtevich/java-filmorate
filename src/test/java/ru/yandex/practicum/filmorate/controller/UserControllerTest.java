@@ -17,21 +17,25 @@ public class UserControllerTest {
 
     @Test
     public void testAddUser() {
-        User secondUser = new User();
-        secondUser.setEmail("name@mail.com");
-        secondUser.setLogin("User1");
-        secondUser.setName("UserOne");
-        secondUser.setBirthday(LocalDate.of(1996, 1, 10));
+        User newUser = new User();
+        newUser.setLogin("Surname5");
+        newUser.setName("user5");
+        newUser.setEmail("mail5@yandex.com");
+        newUser.setBirthday(LocalDate.of(2020, 8, 19));
 
-        User addUser = userController.addUser(secondUser);
-
-        assertNotNull(addUser);
-        assertNotNull(addUser.getId());
-        assertNotNull(secondUser.getEmail(), addUser.getEmail());
-        assertNotNull(secondUser.getLogin(), addUser.getLogin());
-        assertNotNull(secondUser.getName(), addUser.getName());
-        System.out.println(userController.getAllUsers());
-
+        Optional<User> userOptional = Optional.ofNullable(user.addUser(newUser));
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user -> {
+                            assertThat(user).hasFieldOrPropertyWithValue("id", 5L);
+                            assertThat(user).hasFieldOrPropertyWithValue("login", "Surname5");
+                            assertThat(user).hasFieldOrPropertyWithValue("name", "user5");
+                            assertThat(user).hasFieldOrPropertyWithValue("email",
+                                    "mail5@yandex.com");
+                            assertThat(user).hasFieldOrPropertyWithValue("birthday",
+                                    LocalDate.of(2020, 8, 19));
+                        }
+                )
     }
 
 }
