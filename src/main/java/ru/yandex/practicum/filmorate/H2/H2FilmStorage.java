@@ -65,6 +65,7 @@ public class H2FilmStorage implements FilmStorage {
         jdbcTemplate.update(sql, parameterSource2);
         return film;
     }
+
     @Override
     public Film getFilm(Long id) {
         final String sql = "SELECT f.film_id,f.film_name,f.description,f.released,f.duration,m.mpa_name,m.mpa_id FROM films f" +
@@ -103,7 +104,6 @@ public class H2FilmStorage implements FilmStorage {
     }
 
 
-
     @Override
     public void filmDelete(Long id) {
         final String sql = "DELETE FROM film_genres WHERE film_id = film_id";
@@ -111,7 +111,6 @@ public class H2FilmStorage implements FilmStorage {
                 .addValue("film_id", id);
         jdbcTemplate.update(sql, parameterSource);
     }
-
 
 
     @Override
