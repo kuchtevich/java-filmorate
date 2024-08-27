@@ -19,4 +19,5 @@ public interface FilmStorage {
     void filmDelete(Long id);
 
     Map<Long, Set<Long>> getLikes();
+
 }

@@ -1,89 +1,118 @@
 package ru.yandex.practicum.filmorate.H2;
 
 
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository("H2FilmStorage")
 public class H2FilmStorage implements FilmStorage {
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public H2FilmStorage(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public H2FilmStorage(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Film addFilm(Film film) {
-        final String INSERT_MESSAGE_SQL = "insert into public.users (film_name, description, duration, releaseDate) values (?, ?, ?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement(INSERT_MESSAGE_SQL, Statement.RETURN_GENERATED_KEYS);
-
-            ps.setString(1, film.getName());
-            ps.setString(2, film.getDescription());
-            ps.setInt(3, film.getDuration());
-            ps.setDate(4, java.sql.Date.valueOf(film.getReleaseDate()));
-
-            return ps;
-        }, keyHolder);
-
-        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-
+        if (film.getMpa().getId() == null) {
+            throw new NotFoundException("Рейтинг не корректный");
+        }
+        final String sql = "INSERT INTO films (film_name,description,released,duration,mpa_id) " +
+                "VALUES (:film_name,:description,:released,:duration,:mpa_id);";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("film_name", film.getName())
+                .addValue("description", film.getDescription())
+                .addValue("released", film.getReleaseDate())
+                .addValue("duration", film.getDuration())
+                .addValue("mpa_id", film.getMpa().getId());
+        jdbcTemplate.update(sql, parameterSource, keyHolder);
+        film.setId(keyHolder.getKey().longValue());
+        if (film.getFilmGenres() != null) {
+            List<Long> genresId = film.getFilmGenres().stream().map(genre -> genre.geId()).toList();
+            addFilmGenres(film.getId(), genresId);
+        }
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
-        final String sql = "UPDATE film SET film_name =:film_name,description =:description," +
-                "release=:releaseDate,duration=:duration WHERE film_id = :film_id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource()
+        final String DELETE = "DELETE FROM film_genres WHERE film_id = film_id";
+        SqlParameterSource parameterSource1 = new MapSqlParameterSource()
+                .addValue("film_id", film.getId());
+        jdbcTemplate.update(DELETE, parameterSource1);
+        final String sql = "UPDATE films SET film_name =:film_name,description =:description," +
+                "released=:releaseDate,duration=:duration,mpa_id WHERE film_id = :film_id";
+        SqlParameterSource parameterSource2 = new MapSqlParameterSource()
                 .addValue("film_id", film.getId())
                 .addValue("film_name", film.getName())
                 .addValue("description", film.getDescription())
                 .addValue("duration", film.getDuration())
-                .addValue("release", film.getReleaseDate());
-        jdbcTemplate.update(sql, parameterSource);
+                .addValue("release", film.getReleaseDate())
+                .addValue("mpa_id", film.getMpa().getMId());
+        if (film.getFilmGenres() != null) {
+            List<Long> genresId = film.getFilmGenres().stream().map(genre -> genre.getGenresId()).toList();
+            addFilmGenres(film.getId(), genresId);
+        }
+        jdbcTemplate.update(sql, parameterSource2);
         return film;
     }
-
     @Override
     public Film getFilm(Long id) {
-        return jdbcTemplate.queryForObject("film_id, description, duration, film_name, release from public.film where film_id = ?", (rs, rowNum) -> {
-            Long filmId = rs.getLong("film_id");
-            String description = rs.getString("description");
-            String name = rs.getString("film_name");
-            LocalDate releaseDate = rs.getDate("release").toLocalDate();
-            Integer duration = rs.getInt("duration");
-            return new Film();
-        }, id);
+        final String sql = "SELECT f.film_id,f.film_name,f.description,f.released,f.duration,m.mpa_name,m.mpa_id FROM films f" +
+                "JOIN mpa m ON f.film_id = m.film_id WHERE film_id = :film_id;";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("film_id", id);
+        return jdbcTemplate.queryForObject(sql, parameterSource, (rs, rowNum) -> {
+            Film film = new Film();
+            film.setId(rs.getLong("film_id"));
+            film.setName(rs.getString("film_name"));
+            film.setDescription(rs.getString("description"));
+            film.setReleaseDate(rs.getDate("released").toLocalDate());
+            film.setDuration(rs.getInt("duration"));
+            Mpa mpa = new Mpa();
+            mpa.setId(rs.getLong("mpa_id"));
+            mpa.setName(rs.getString("mpa_name"));
+            film.setMpa(mpa);
+            return film;
+        });
     }
 
     @Override
     public Collection<Film> getAllFilms() {
-        return jdbcTemplate.query("select film_id, description, duration, film_name, release from public.film", (rs, rowNum) -> {
-            Long id = rs.getLong("film_id");
-            String description = rs.getString("description");
-            String name = rs.getString("film_name");
-            LocalDate releaseDate = rs.getDate("release").toLocalDate();
-            Integer duration = rs.getInt("duration");
-            return new Film();
+        final String sql = "SELECT * FROM films";
+        SqlParameterSource parameterSource = new MapSqlParameterSource();
+        return jdbcTemplate.query(sql, parameterSource, (rs, rowNum) -> {
+            Film film = new Film();
+            film.setId(rs.getLong("film_id"));
+            film.setName(rs.getString("film_name"));
+            film.setDescription(rs.getString("description"));
+            film.setReleaseDate(rs.getDate("released").toLocalDate());
+            film.setDuration(rs.getInt("duration"));
+            Long mpaId = rs.getLong("mpa_id");
+            Optional<Rating> ratingOptional = jdbcRatingRepository.findRatingById(mpaId);
+            ratingOptional.ifPresent(film::setMpa);
+            return addExtraFields(film);
         });
     }
 
@@ -96,5 +125,18 @@ public class H2FilmStorage implements FilmStorage {
     public Map<Long, Set<Long>> getLikes() {
         return Map.of();
     }
-}
 
+    private void addFilmGenres(Long id, List<Long> genresId) {
+        if (id == null || genresId.isEmpty()) {
+            return;
+        }
+        final String sql = "INSERT INTO film_genres (film_id,genre_id) VALUES (:film_id,:genre_id)";
+        SqlParameterSource parameterSource = null;
+        for (Long genre : genresId) {
+            parameterSource = new MapSqlParameterSource()
+                    .addValue("film_id", id)
+                    .addValue("genre_id", genre);
+        }
+        jdbcTemplate.update(sql, parameterSource);
+    }
+}

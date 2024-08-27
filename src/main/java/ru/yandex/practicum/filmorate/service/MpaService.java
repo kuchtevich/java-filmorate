@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -20,10 +21,10 @@ public class MpaService {
     }
 
     public Mpa findRatingById(Long id) {
-        List<Mpa> mpaOptional = ratingRepository.findMpaById(id);
+        Optional<Mpa> mpaOptional = ratingRepository.findMpaById(id);
         if (mpaOptional.isEmpty()) {
-            log.info("Отправлен ответ GET /mpa с телом {}", mpaOptional.get(id.intValue()));
-            return mpaOptional.get(id.intValue());
+            log.info("Отправлен ответ GET /mpa с телом {}", mpaOptional.get());
+            return mpaOptional.get();
         } else {
             log.error("Такого mpa не существует");
             throw new ConditionsNotMetException("Mpa с ID " + id + " не существует");
