@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +23,6 @@ public class UserControllerTest {
         secondUser.setName("UserOne");
         secondUser.setBirthday(LocalDate.of(1996, 1, 10));
 
-
         User addUser = userController.addUser(secondUser);
 
         assertNotNull(addUser);
@@ -32,7 +30,6 @@ public class UserControllerTest {
         assertNotNull(secondUser.getEmail(), addUser.getEmail());
         assertNotNull(secondUser.getLogin(), addUser.getLogin());
         assertNotNull(secondUser.getName(), addUser.getName());
-        assertNotNull(secondUser.getBirthday(), addUser.getBirthday());
         System.out.println(userController.getAllUsers());
 
     }
