@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.RequiredArgsConstructor;
+//import lombok.RequiredArgsConstructor;
 //import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,7 +17,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 //@SpringBootTest
 //@ImportResource
 //@AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+//@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmRepositoryTest {
     @Autowired
     FilmStorage filmStorage;
