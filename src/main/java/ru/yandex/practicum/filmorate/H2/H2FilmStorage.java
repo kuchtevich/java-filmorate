@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository.daoimpl;
+package ru.yandex.practicum.filmorate.H2;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

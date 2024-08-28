@@ -2,80 +2,69 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
 
     @Autowired
-    public FilmService(@Qualifier("H2FilmStorage") FilmStorage filmStorage, @Qualifier("H2UserStorage") UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
     }
 
     public Film addFilm(Film film) {
+        log.info("Отправлен ответ Put / films с телом {}", film);
         return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        log.info("Отправлен ответ Put / films с телом {}", film);
         return filmStorage.updateFilm(film);
     }
 
-    public void filmDelete(final Long id) {
-        filmStorage.filmDelete(id);
+    public boolean filmDelete(final Long id) {
+        log.info("Фильм удален c ID {} удален", id);
+        return filmStorage.filmDelete(id);
     }
 
     public Collection<Film> getAllFilms() {
+        log.info("Отправлен ответ GET /films");
         return filmStorage.getAllFilms();
     }
 
-    public void filmLike(final Long filmId, final Long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        Set<Long> likes = filmStorage.getLikes().get(film.getId());
-        userStorage.userGet(userId);
-        if (likes.contains(userId)) {
-            log.error("Пользователь {} уже поставил лайк фильму {}", userId, filmId);
-            throw new ValidationException("Пользователь уже ставил лайк этому фильму");
-        }
-        if (userId == null) {
-            throw new ConditionsNotMetException("Пользователь не найден.");
-        }
-        likes.add(userId);
+    public boolean filmLike(final Long filmId, final Long userId) {
         log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
+        return likeStorage.filmLike(filmId, userId);
     }
 
-    public void deleteLike(final Long filmId, final Long userId) {
-        filmStorage.getFilm(filmId);
-        Set<Long> likes = filmStorage.getLikes().get(filmId);
-        User user = userStorage.userGet(userId);
-        if (!likes.remove(user.getId())) {
-            throw new NotFoundException("Пользователь " + userId + " Не ставил лайк этому фильму");
-        }
+    public boolean deleteLike(final Long filmId, final Long userId) {
         log.info("У фильма {} был удален лайк от пользователя {}", filmId, userId);
+        return likeStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopular(final Long count) {
+    public Collection<Film> getPopular(final Long count) {
         log.info("Было возращено {} популярных фильма", count);
-        return filmStorage.getAllFilms().stream()
-                .sorted(Comparator.comparingInt(film -> filmStorage.getLikes().get(film.getId()).size()))
-                .limit(count)
-                .collect(Collectors.toList()).reversed();
+        return filmStorage.popularFilms(count);
+    }
+
+    public Film getFilm(Long id) {
+        Optional<Film> filmOptional = filmStorage.getFilm(id);
+        if (filmOptional.isPresent()) {
+            log.info("Отправлен ответ GET / films с телом {}", filmOptional.get());
+            return filmOptional.get();
+        } else {
+            log.error("Такого фильма не существует");
+            throw new ConditionsNotMetException("Фильма с ID " + id + " не существует");
+        }
     }
 }

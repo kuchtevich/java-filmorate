@@ -1,38 +1,35 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.H2.H2MpaStorage;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
-import java.util.Optional;
-
 
 @Service
 @Slf4j
 public class MpaService {
 
-    private final H2MpaStorage ratingRepository;
+    private final MpaStorage mpaStorage;
 
-    public MpaService(H2MpaStorage  ratingRepository) {
-        this.ratingRepository = ratingRepository;
+    public MpaService(MpaStorage mpaStorage) {
+        this.mpaStorage = mpaStorage;
     }
 
-    public Mpa findRatingById(Long id) {
-        Optional<Mpa> mpaOptional = ratingRepository.findMpaById(id);
-        if (mpaOptional.isEmpty()) {
-            log.info("Отправлен ответ GET /mpa с телом {}", mpaOptional.get());
-            return mpaOptional.get();
-        } else {
-            log.error("Такого mpa не существует");
+    public Mpa findRatingById(final Long id) {
+        try {
+            return mpaStorage.findMpaById(id).orElseThrow(() ->
+                    (new ConditionsNotMetException("Mpa с ID " + id + " не существует")));
+        } catch (EmptyResultDataAccessException ignored) {
             throw new ConditionsNotMetException("Mpa с ID " + id + " не существует");
         }
     }
 
     public List<Mpa> getAllMpa() {
         log.info("Отправлен ответ GET /mpa");
-        return ratingRepository.getAllMpa();
+        return mpaStorage.getAllMpa();
     }
 }

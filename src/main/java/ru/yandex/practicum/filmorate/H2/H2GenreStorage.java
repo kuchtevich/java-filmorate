@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.H2;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,7 +22,7 @@ public class H2GenreStorage implements GenreStorage {
     }
 
     @Override
-    public Optional<Genre> genreById(Long id) {
+    public Optional<Genre> genreById(final Long id) {
         final String sql = "SELECT genre_id, genre_name FROM genres WHERE genre_id = :genre_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("genre_id", id);
@@ -36,6 +35,4 @@ public class H2GenreStorage implements GenreStorage {
         String sql = "SELECT * FROM genres";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Genre(rs.getLong("genre_id"), rs.getString("genre_name")));
     }
-
-
 }
