@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import java.util.*;
 
@@ -14,39 +15,47 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
+    private final ValidateService validateService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService,ValidateService validateService) {
         this.userService = userService;
+        this.validateService = validateService;
     }
 
     @PutMapping("{userId}/friends/{friendId}")
     public void addToFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        validateService.checkAlreadyFriend(userId, friendId);
         userService.addToFriend(userId, friendId);
     }
 
     @DeleteMapping("{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        validateService.checkCorrectUser(userId);
+        validateService.checkCorrectUser(friendId);
         userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("{userId}/friends")
-    public List<User> allUserFriends(@PathVariable Long userId) {
+    public Collection<User> allUserFriends(@PathVariable Long userId) {
+        validateService.checkCorrectUser(userId);
         return userService.allUserFriends(userId);
     }
 
     @GetMapping("{userId}/friends/common/{otherUserId}")
-    public List<User> commonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+    public Collection<User> commonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
         return userService.commonFriends(userId, otherUserId);
     }
 
     @PostMapping
     public User addUser(@RequestBody User newUser) {
+        validateService.validateUserInput(newUser);
         return userService.addUser(newUser);
     }
 
     @PutMapping
     public User userUpdate(@RequestBody User newUser) {
+        validateService.validUserUpdate(newUser);
         return userService.userUpdate(newUser);
     }
 
@@ -61,3 +70,4 @@ public class UserController {
         userService.userDelete(id);
     }
 }
+

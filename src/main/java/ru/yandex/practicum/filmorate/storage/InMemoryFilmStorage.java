@@ -54,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void filmDelete(Long id) {
+    public boolean filmDelete(Long id) {
         if (films.get(id) == null) {
             log.info("Фильма с таким ID " + id + " не существует");
         }
