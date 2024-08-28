@@ -20,7 +20,7 @@ import java.util.*;
 
 
 @Repository
-public abstract class H2FilmStorage implements FilmStorage {
+public abstract class H2FilmStorage  {
 
     private final NamedParameterJdbcOperations jdbcTemplate;
 
@@ -33,7 +33,7 @@ public abstract class H2FilmStorage implements FilmStorage {
         this.jdbcRatingRepository = ratingRepository;
     }
 
-    @Override
+
     public Film filmAdd(Film filmRequest) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Long ratingId = 0L;
@@ -55,7 +55,7 @@ public abstract class H2FilmStorage implements FilmStorage {
         return addExtraFields(filmRequest);
     }
 
-    @Override
+
     public Film filmUpdate(Film filmRequest) {
         final String sql = "UPDATE FILMS SET film_name = :film_name, description = :description," +
                 " released = :released, duration = :duration, mpa_id = :mpa_id WHERE film_id = :film_id;";
@@ -71,7 +71,7 @@ public abstract class H2FilmStorage implements FilmStorage {
         return addExtraFields(filmRequest);
     }
 
-    @Override
+
     public Optional<Film> getFilm(Long id) {
         final String sql = "SELECT * FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -90,7 +90,7 @@ public abstract class H2FilmStorage implements FilmStorage {
         }));
     }
 
-    @Override
+
     public boolean filmDelete(Long id) {
         final String sql = "DELETE FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
