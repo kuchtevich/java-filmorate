@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 //import java.util.Optional;
 
 //import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @ImportResource
 @AutoConfigureTestDatabase
@@ -47,7 +46,6 @@ class FilmRepositoryTest {
 //                );
 //
 //    }
-
 
 
 }
