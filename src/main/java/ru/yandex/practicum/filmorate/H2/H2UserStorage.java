@@ -63,11 +63,12 @@ public class H2UserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public boolean deleteUser(Long id) {
         final String sql = "DELETE FROM users WHERE user_id = :user_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("user_id", id);
         jdbcTemplate.update(sql, parameterSource);
+        return false;
     }
 
     @Override

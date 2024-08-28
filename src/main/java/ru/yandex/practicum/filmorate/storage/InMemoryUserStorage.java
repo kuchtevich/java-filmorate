@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -13,33 +13,39 @@ import java.util.*;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
+
     private final Map<Long, User> users = new HashMap<>();
+
     @Getter
     private final Map<Long, Set<User>> friends = new HashMap<>();
     private long currentMaxId;
 
     @Override
     public User addUser(User newUser) {
-        validUser(newUser);
+        log.info("Пришел Post запрос /users с телом {}", newUser);
+        validateUserInput(newUser);
         newUser.setId(getNextId());
         users.put(newUser.getId(), newUser);
         friends.put(newUser.getId(), new HashSet<>());
+        log.info("Отправлен ответ Post /users с телом {}", newUser);
         return newUser;
     }
 
     @Override
     public Collection<User> allUsers() {
+        log.info("Все пользователи");
         return users.values();
     }
 
     @Override
     public User updateUser(User newUser) {
+        log.info("Пришел Put запрос /users с телом {}", newUser);
         if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
             log.error("Пользователь с id " + newUser.getId() + " не найден");
-            throw new NotFoundException("id не найден");
+            throw new ConditionsNotMetException("id не найден");
         }
         User oldUser = users.get(newUser.getId());
-        validUser(newUser);
+        validateUserInput(newUser);
         oldUser.setEmail(newUser.getEmail());
         oldUser.setLogin(newUser.getLogin());
         oldUser.setName(newUser.getName());
@@ -56,39 +62,40 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User userGet(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException("id не найден" + users.get(id));
+            throw new ConditionsNotMetException("id не найден");
         }
         return users.get(id);
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public boolean deleteUser(Long id) {
         if (users.get(id) == null) {
-            throw new NotFoundException("id не найден" + users.get(id));
+            throw new ConditionsNotMetException("id не найден");
         }
         log.info("Пользователь удален");
         users.remove(id);
+        return true;
     }
 
-    private void validUser(User user) {
-//электронная почта не может быть пустой и должна содержать символ @;
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.info("Error");
-            throw new ValidationException("Email не должен иметь пробелов, а так же должен содержать символ @!");
+    private void validateUserInput(User user) {
+        if (user.getLogin() == null || user.getEmail() == null || user.getBirthday() == null) {
+            log.error("Ошибка в запросе");
+            throw new ValidationException("Переданно нулевое значение");
         }
-        //логин не может быть пустым и содержать пробелы;
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            log.info("Error");
-            throw new ValidationException("Login не должен быть пустым и содержать пробелы!");
-        }
-//имя для отображения может быть пустым — в таком случае будет использован логин;
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-//дата рождения не может быть в будущем.
-        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("Error");
-            throw new ValidationException("Дата рождения не может быть указана в будущем времени!");
+        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            log.error("Ошибка в написании почты");
+            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
+        }
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            log.error("Ошибка в написании логина");
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.error("Ошибка в дате рождения");
+            throw new ValidationException("Дата рождения не может быть в будущем");
         }
     }
 
