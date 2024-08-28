@@ -38,7 +38,7 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void filmDelete(Long id) {
+    public void filmDelete(final Long id) {
         filmStorage.filmDelete(id);
     }
 
@@ -46,7 +46,7 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public void filmLike(Long filmId, Long userId) {
+    public void filmLike(final Long filmId, final Long userId) {
         Film film = filmStorage.getFilm(filmId);
         Set<Long> likes = filmStorage.getLikes().get(film.getId());
         userStorage.userGet(userId);
@@ -61,7 +61,7 @@ public class FilmService {
         log.info("Фильму {} был поставлен лайк от пользователя {}", filmId, userId);
     }
 
-    public void deleteLike(Long filmId, Long userId) {
+    public void deleteLike(final Long filmId, final Long userId) {
         filmStorage.getFilm(filmId);
         Set<Long> likes = filmStorage.getLikes().get(filmId);
         User user = userStorage.userGet(userId);
@@ -71,7 +71,7 @@ public class FilmService {
         log.info("У фильма {} был удален лайк от пользователя {}", filmId, userId);
     }
 
-    public List<Film> getPopular(Long count) {
+    public List<Film> getPopular(final Long count) {
         log.info("Было возращено {} популярных фильма", count);
         return filmStorage.getAllFilms().stream()
                 .sorted(Comparator.comparingInt(film -> filmStorage.getLikes().get(film.getId()).size()))
