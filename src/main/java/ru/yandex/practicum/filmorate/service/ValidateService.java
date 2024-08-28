@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -80,7 +81,7 @@ public class ValidateService {
     public void validateFilmUpdate(Film film) {
         if (film.getId() == null) {
             log.error("Передан пустой ID");
-            throw new ConditionsNotMetException("ID не существует");
+            throw new NotFoundException("ID не существует");
         }
 
         final String sql = "SELECT COUNT(*) FROM films WHERE film_id = :film_id";
@@ -90,16 +91,16 @@ public class ValidateService {
             Integer count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
             if (count == null || count == 0) {
                 log.error("Фильма с ID {} не существует", film.getId());
-                throw new ConditionsNotMetException("Фильма с ID " + film.getId() + " не существует");
+                throw new NotFoundException("Фильма с ID " + film.getId() + " не существует");
             } else {
                 log.info("Фильм с ID {} успешно найден", film.getId());
             }
         } catch (EmptyResultDataAccessException e) {
             log.error("Ошибка при выполнении запроса для проверки существования фильма с ID {}", film.getId(), e);
-            throw new ConditionsNotMetException("Ошибка при проверке существования фильма с ID " + film.getId());
+            throw new NotFoundException("Ошибка при проверке существования фильма с ID " + film.getId());
         } catch (DataAccessException e) {
             log.error("Ошибка доступа к данным при проверке существования фильма с ID {}", film.getId(), e);
-            throw new ConditionsNotMetException("Ошибка доступа к данным при проверке существования фильма с ID " + film.getId());
+            throw new NotFoundException("Ошибка доступа к данным при проверке существования фильма с ID " + film.getId());
         }
     }
 
@@ -107,7 +108,7 @@ public class ValidateService {
     public void validUserUpdate(User user) {
         if (user.getId() == null) {
             log.error("Пользователь с таким ID не существует");
-            throw new ConditionsNotMetException("Пользователя с ID " + user.getId() + " не существует");
+            throw new NotFoundException("Пользователя с ID " + user.getId() + " не существует");
         }
         final String sql = "SELECT * FROM users WHERE user_id = :user_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -124,7 +125,7 @@ public class ValidateService {
                 return userExist;
             });
         } catch (EmptyResultDataAccessException ignored) {
-            throw new ConditionsNotMetException("Пользователь не найден для заданного ID: " + user.getId());
+            throw new NotFoundException("Пользователь не найден для заданного ID: " + user.getId());
         }
     }
 
@@ -140,7 +141,7 @@ public class ValidateService {
                 throw new ValidationException("Пользователи уже являются друзьями: " + userId + " и " + friendId);
             }
         } catch (EmptyResultDataAccessException ignored) {
-            throw new ConditionsNotMetException("Ошибка при запросе к базе данных.");
+            throw new NotFoundException("Ошибка при запросе к базе данных.");
         }
     }
 
@@ -149,10 +150,10 @@ public class ValidateService {
         try {
             SqlParameterSource userParams = new MapSqlParameterSource().addValue("id", userId);
             if (jdbcTemplate.queryForObject(userExistSql, userParams, Integer.class) == 0) {
-                throw new ConditionsNotMetException("Пользователь с ID: " + userId + " не найден.");
+                throw new NotFoundException("Пользователь с ID: " + userId + " не найден.");
             }
         } catch (EmptyResultDataAccessException ignored) {
-            throw new ConditionsNotMetException("Ошибка при запросе к базе данных.");
+            throw new NotFoundException("Ошибка при запросе к базе данных.");
         }
     }
 }

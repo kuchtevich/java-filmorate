@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
@@ -22,9 +23,9 @@ public class MpaService {
     public Mpa findRatingById(final Long id) {
         try {
             return mpaStorage.findMpaById(id).orElseThrow(() ->
-                    (new ConditionsNotMetException("Mpa с ID " + id + " не существует")));
+                    (new NotFoundException("Mpa с ID " + id + " не существует")));
         } catch (EmptyResultDataAccessException ignored) {
-            throw new ConditionsNotMetException("Mpa с ID " + id + " не существует");
+            throw new NotFoundException("Mpa с ID " + id + " не существует");
         }
     }
 

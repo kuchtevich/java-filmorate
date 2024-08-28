@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Primary;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,12 +22,13 @@ import java.util.*;
 
 
 @Repository
+@Primary
 public class H2FilmStorage implements FilmStorage {
 
-    private NamedParameterJdbcOperations jdbcTemplate;
+    private final NamedParameterJdbcOperations jdbcTemplate;
 
 
-    private MpaStorage jdbcMpaStorage;
+    private final MpaStorage jdbcMpaStorage;
 
     @Autowired
     public H2FilmStorage(NamedParameterJdbcOperations jdbcTemplate, MpaStorage ratingRepository) {

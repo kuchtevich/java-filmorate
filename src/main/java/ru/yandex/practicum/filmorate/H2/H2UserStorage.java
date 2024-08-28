@@ -35,15 +35,15 @@ public class H2UserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        final String INSERT_MESSAGE_SQL = "INSERT INTO users (user_name,login,email,birthday) " +
-                "VALUES (:user_name,:login,email,:birthday)";
+        final String INSERT = "INSERT INTO users (user_name,login,email,birthday) VALUES" +
+                "(:user_name,:login,:email,:birthday)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("user_name", user.getName())
                 .addValue("login", user.getLogin())
                 .addValue("email", user.getEmail())
-                .addValue("birhday", user.getBirthday());
-        jdbcTemplate.update(INSERT_MESSAGE_SQL, parameterSource, keyHolder);
+                .addValue("birthday", user.getBirthday());
+        jdbcTemplate.update(INSERT, parameterSource, keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return user;
     }

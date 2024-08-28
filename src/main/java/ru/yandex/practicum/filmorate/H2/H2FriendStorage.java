@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.H2;
+package ru.yandex.practicum.filmorate.H2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;

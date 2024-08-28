@@ -25,7 +25,7 @@ public class UserController {
     @PutMapping("{userId}/friends/{friendId}")
     public void addToFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         validateService.checkAlreadyFriend(userId, friendId);
-        userService.commonFriends(userId, friendId);
+        userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("{userId}/friends/{friendId}")
