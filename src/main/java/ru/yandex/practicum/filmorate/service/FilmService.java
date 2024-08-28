@@ -24,17 +24,17 @@ public class FilmService {
 
     public Film filmAdd(Film film) {
         log.info("Отправлен ответ Put / films с телом {}", film);
-        return filmStorage.filmAdd(film);
+        return filmStorage.addFilm(film);
     }
 
     public Film filmUpdate(Film film) {
         log.info("Отправлен ответ Put / films с телом {}", film);
-        return filmStorage.filmUpdate(film);
+        return filmStorage.updateFilm(film);
     }
 
     public boolean filmDelete(final Long id) {
         log.info("Фильм удален c ID {} удален", id);
-        return filmStorage.filmDelete(id);
+        return filmStorage.deleteFilm(id);
     }
 
     public Collection<Film> allFilms() {
@@ -58,7 +58,7 @@ public class FilmService {
     }
 
     public Film getFilm(Long id) {
-        Optional<Film> filmOptional = filmStorage.getFilm(id);
+        Optional<Film> filmOptional = filmStorage.filmGet(id);
         if (filmOptional.isPresent()) {
             log.info("Отправлен ответ GET / films с телом {}", filmOptional.get());
             return filmOptional.get();

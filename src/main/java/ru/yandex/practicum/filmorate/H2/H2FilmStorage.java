@@ -37,7 +37,7 @@ public class H2FilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film filmAdd(Film filmRequest) {
+    public Film addFilm(Film filmRequest) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Long ratingId = 0L;
         if (filmRequest.getMpa() != null) {
@@ -59,7 +59,7 @@ public class H2FilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film filmUpdate(Film filmRequest) {
+    public Film updateFilm(Film filmRequest) {
         final String sql = "UPDATE FILMS SET film_name = :film_name, description = :description," +
                 " released = :released, duration = :duration, mpa_id = :mpa_id WHERE film_id = :film_id;";
         deleteAllFilmGenresById(filmRequest.getId());
@@ -75,7 +75,7 @@ public class H2FilmStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> getFilm(Long id) {
+    public Optional<Film> filmGet(Long id) {
         final String sql = "SELECT * FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("film_id", id);
@@ -94,7 +94,7 @@ public class H2FilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean filmDelete(Long id) {
+    public boolean deleteFilm(Long id) {
         final String sql = "DELETE FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("film_id", id);

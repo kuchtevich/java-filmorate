@@ -32,7 +32,7 @@ public class H2FriendStorage implements FriendStorage {
     }
 
     @Override
-    public boolean friendRemove(final Long userId, final Long friendId) {
+    public boolean deleteFriend(final Long userId, final Long friendId) {
         final String sql = "DELETE FROM friends WHERE user_id = :user_id AND friend_id = :friend_id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("user_id", userId)

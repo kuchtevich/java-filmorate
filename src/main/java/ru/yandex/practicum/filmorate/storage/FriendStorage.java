@@ -8,7 +8,7 @@ public interface FriendStorage {
 
     boolean addFriend(Long userId, Long friendId);
 
-    boolean friendRemove(Long userId, Long friendId);
+    boolean deleteFriend(Long userId, Long friendId);
 
     Collection<User> commonFriends(Long userIntersectionId, Long userId);
 

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.FriendStorage;
 
 
 import java.util.*;
@@ -53,7 +52,7 @@ public class UserService {
 
     public boolean friendRemove(Long userId, Long friendId) {
         log.info("Пользователи с ID {},{} теперь недрузья", userId, friendId);
-        return friendStorage.friendRemove(userId, friendId);
+        return friendStorage.deleteFriend(userId, friendId);
     }
 
 

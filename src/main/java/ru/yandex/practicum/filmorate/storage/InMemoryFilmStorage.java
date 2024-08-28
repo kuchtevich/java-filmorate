@@ -22,7 +22,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
     private long currentId;
 
     @Override
-    public Film filmAdd(Film filmRequest) {
+    public Film addFilm(Film filmRequest) {
         log.info("Пришел Post запрос /films с телом {}", filmRequest);
         validateFilmInput(filmRequest);
         Film film = setFilm(filmRequest);
@@ -39,7 +39,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film filmUpdate(Film newFilm) {
+    public Film updateFilm(Film newFilm) {
         log.info("Пришел Put запрос /films с телом {}", newFilm);
         if (newFilm.getId() == null || films.get(newFilm.getId()) == null) {
             log.error("Фильм с id " + newFilm.getId() + " не найден");
@@ -62,7 +62,7 @@ public abstract class InMemoryFilmStorage implements FilmStorage {
 //    }
 
     @Override
-    public boolean filmDelete(Long id) {
+    public boolean deleteFilm(Long id) {
         if (films.get(id) == null) {
             throw new ConditionsNotMetException("id не найден");
         }
