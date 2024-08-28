@@ -214,6 +214,7 @@ public class H2FilmStorage implements FilmStorage {
         film.setMpa(mpa);
         return film;
     }
+
     private void checkCorrectGenre(Long id) {
         final String sql = "SELECT genre_id, genre_name AS name FROM genres WHERE genre_id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -247,6 +248,7 @@ public class H2FilmStorage implements FilmStorage {
             throw new ConditionsNotMetException("Неправильно задан рейтинг");
         }
     }
+
     private Map<Long, LinkedHashSet<Genre>> getAllGenresForFilms() {
         final String sql = "SELECT fg.film_id, g.genre_id, g.genre_name " +
                 "FROM film_genres fg " +
