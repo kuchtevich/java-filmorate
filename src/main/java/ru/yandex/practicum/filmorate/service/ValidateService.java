@@ -31,7 +31,7 @@ public class ValidateService {
     public ValidateService(UserStorage userStoragee, FilmStorage filmStorage,
                            NamedParameterJdbcTemplate jdbcTemplate) {
         this.userStorage = userStoragee;
-        this.filmStorage=filmStorage;
+        this.filmStorage = filmStorage;
         this.jdbcTemplate = jdbcTemplate;
     }
 
