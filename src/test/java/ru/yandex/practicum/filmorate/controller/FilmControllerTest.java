@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 //import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ImportResource;
+//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.context.annotation.ImportResource;
 //import ru.yandex.practicum.filmorate.model.Film;
 //import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -14,9 +14,9 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 //import java.util.Optional;
 
 //import static org.assertj.core.api.Assertions.assertThat;
-@SpringBootTest
-@ImportResource
-@AutoConfigureTestDatabase
+//@SpringBootTest
+//@ImportResource
+//@AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmRepositoryTest {
     @Autowired
