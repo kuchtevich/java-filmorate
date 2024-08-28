@@ -12,12 +12,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @SpringBootTest
 @ImportResource
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class UserRepositoryTest {
+class UserControllerTest {
 
     @Autowired
     UserStorage userStorage;
