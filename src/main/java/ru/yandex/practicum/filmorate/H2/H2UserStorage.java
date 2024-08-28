@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Primary;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Repository("H2UserStorage")
+@Primary
 public class H2UserStorage implements UserStorage {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
