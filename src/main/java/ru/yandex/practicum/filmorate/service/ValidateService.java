@@ -28,10 +28,10 @@ public class ValidateService {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ValidateService(UserService userService, FilmService filmService,
+    public ValidateService(UserStorage userStoragee, FilmStorage filmStorage,
                            NamedParameterJdbcTemplate jdbcTemplate) {
-        this.userStorage = userService;
-        this.filmStorage = filmService;
+        this.userStorage = userStoragee;
+        this.filmStorage=filmStorage;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -49,7 +49,7 @@ public class ValidateService {
             log.error("Ошибка в дате релиза!");
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
         }
-        if (film.getDuration() == null || film.getDuration() <= 0) {
+        if (film.getDuration() <= 0) {
             log.error("Продолжительность отрицательная!");
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         }

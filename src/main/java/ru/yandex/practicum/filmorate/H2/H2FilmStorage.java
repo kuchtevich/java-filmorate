@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.H2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -13,26 +13,28 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.*;
 
 
 @Repository
-public abstract class H2FilmStorage  {
+public class H2FilmStorage implements FilmStorage {
 
-    private final NamedParameterJdbcOperations jdbcTemplate;
+    private NamedParameterJdbcOperations jdbcTemplate;
 
 
-    private final MpaStorage jdbcRatingRepository;
+    private MpaStorage jdbcMpaStorage;
 
     @Autowired
     public H2FilmStorage(NamedParameterJdbcOperations jdbcTemplate, MpaStorage ratingRepository) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcRatingRepository = ratingRepository;
+        this.jdbcMpaStorage = ratingRepository;
     }
 
-
+    @Override
     public Film filmAdd(Film filmRequest) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Long ratingId = 0L;
@@ -54,7 +56,7 @@ public abstract class H2FilmStorage  {
         return addExtraFields(filmRequest);
     }
 
-
+    @Override
     public Film filmUpdate(Film filmRequest) {
         final String sql = "UPDATE FILMS SET film_name = :film_name, description = :description," +
                 " released = :released, duration = :duration, mpa_id = :mpa_id WHERE film_id = :film_id;";
@@ -70,7 +72,7 @@ public abstract class H2FilmStorage  {
         return addExtraFields(filmRequest);
     }
 
-
+    @Override
     public Optional<Film> getFilm(Long id) {
         final String sql = "SELECT * FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -83,13 +85,13 @@ public abstract class H2FilmStorage  {
             film.setReleaseDate(rs.getDate("released").toLocalDate());
             film.setDuration(rs.getInt("duration"));
             Long mpaId = rs.getLong("mpa_id");
-            Optional<Mpa> ratingOptional = jdbcRatingRepository.findRatingById(mpaId);
+            Optional<Mpa> ratingOptional = jdbcMpaStorage.findMpaById(mpaId);
             ratingOptional.ifPresent(film::setMpa);
             return addExtraFields(film);
         }));
     }
 
-
+    @Override
     public boolean filmDelete(Long id) {
         final String sql = "DELETE FROM films WHERE film_id = :film_id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -99,8 +101,62 @@ public abstract class H2FilmStorage  {
 
     }
 
+    @Override
+    public Collection<Film> allFilms() {
+        final String sql = "SELECT * FROM films";
+        SqlParameterSource parameterSource = new MapSqlParameterSource();
+        return jdbcTemplate.query(sql, parameterSource, (rs, rowNum) -> {
+            Film film = new Film();
+            film.setId(rs.getLong("film_id"));
+            film.setName(rs.getString("film_name"));
+            film.setDescription(rs.getString("description"));
+            film.setReleaseDate(rs.getDate("released").toLocalDate());
+            film.setDuration(rs.getInt("duration"));
+            Long mpaId = rs.getLong("mpa_id");
+            Optional<Mpa> ratingOptional = jdbcMpaStorage.findMpaById(mpaId);
+            ratingOptional.ifPresent(film::setMpa);
+            return addExtraFields(film);
+        });
+    }
 
+    @Override
+    public Collection<Film> popularFilms(Long count) {
+        final String sql = "SELECT f.film_id, f.film_name, f.description, f.released, f.duration, m.mpa_id, COUNT(l.user_id) AS likes_count" +
+                " FROM films f LEFT JOIN likes l ON f.film_id = l.film_id" +
+                " LEFT JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                " GROUP BY f.film_id, f.film_name, f.description, f.released, f.duration, m.mpa_id" +
+                " ORDER BY likes_count DESC LIMIT :count";
 
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("count", count);
+        return jdbcTemplate.query(sql, parameterSource, (rs, rowNum) -> {
+            Film film = new Film();
+            Mpa rating = new Mpa();
+            film.setId(rs.getLong("film_id"));
+            film.setName(rs.getString("film_name"));
+            film.setDescription(rs.getString("description"));
+            film.setReleaseDate(rs.getDate("released").toLocalDate());
+            film.setDuration(rs.getInt("duration"));
+            Long mpaId = rs.getLong("mpa_id");
+            Optional<Mpa> ratingOptional = jdbcMpaStorage.findMpaById(mpaId);
+            ratingOptional.ifPresent(film::setMpa);
+            return addExtraFields(film);
+        });
+    }
+
+    private Film addExtraFields(Film film) {
+        Long filmId = film.getId();
+        Long mpaId = film.getMpa().getId();
+        checkCorrectMpa(mpaId);
+        if (film.getGenres() != null) {
+            film.getGenres().forEach(genre -> filmGenresAdd(filmId, genre.getId()));
+        }
+        Optional<Mpa> filmMpa = jdbcMpaStorage.findMpaById(mpaId);
+        Set<Genre> filmGenres = new LinkedHashSet<>(getAllFilmGenresById(filmId));
+        film.setMpa(filmMpa.orElseThrow(() -> new ConditionsNotMetException("Рейтинг с ID " + mpaId + " не найден")));
+        film.setGenres((LinkedHashSet<Genre>) filmGenres);
+        return film;
+    }
 
     private boolean deleteAllFilmGenresById(Long id) {
         final String sql = "DELETE FROM film_genres WHERE film_id = film_id";
@@ -151,6 +207,22 @@ public abstract class H2FilmStorage  {
         }
     }
 
+    private void checkCorrectMpa(Long id) {
+        final String sql = "SELECT mpa_id, mpa_name AS name FROM mpa WHERE mpa_id = :id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("id", id);
+        Mpa mpa;
+        try {
+            mpa = jdbcTemplate.queryForObject(sql, parameterSource, (rs, rowNum) ->
+                    new Mpa(rs.getLong("mpa_id"), rs.getString("mpa_name"))
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            throw new ValidationException("Mpa не найден для заданного ID: " + id);
+        }
+        if (mpa.getName().isBlank() || mpa.getId() == null) {
+            throw new ConditionsNotMetException("Неправильно задан рейтинг");
+        }
+    }
 }
 
 

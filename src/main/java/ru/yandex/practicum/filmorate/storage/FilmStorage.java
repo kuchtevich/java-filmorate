@@ -7,15 +7,15 @@ import java.util.Optional;
 
 public interface FilmStorage {
 
-    Film addFilm(Film film);
+    Film filmAdd(Film filmRequest);
 
-    Film updateFilm(Film film);
+    Film filmUpdate(Film filmRequest);
+
+    Collection<Film> allFilms();
+
+    Collection<Film> popularFilms(Long count);
 
     Optional<Film> getFilm(Long id);
 
-    Collection<Film> getAllFilms();
-
     boolean filmDelete(Long id);
-
-    public Collection<Film> popularFilms(Long count);
 }

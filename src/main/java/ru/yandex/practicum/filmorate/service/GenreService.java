@@ -20,7 +20,7 @@ public class GenreService {
 
     public Genre genreById(final Long id) {
         try {
-            return genreRepository.genreById(id).orElseThrow(() ->
+            return genreStorage.genreById(id).orElseThrow(() ->
                     new ConditionsNotMetException("Жанра с ID " + id + " не существует"));
         } catch (EmptyResultDataAccessException ignored) {
             throw new ConditionsNotMetException("Жанра с ID " + id + " не существует");
@@ -29,7 +29,7 @@ public class GenreService {
 
     public List<Genre> getAllGenre() {
         log.info("Отправлен ответ GET /genres");
-        return genreRepository.getAllGenre();
+        return genreStorage.getAllGenre();
     }
 }
 

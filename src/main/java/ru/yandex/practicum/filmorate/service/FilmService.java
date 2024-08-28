@@ -22,14 +22,14 @@ public class FilmService {
         this.likeStorage = likeStorage;
     }
 
-    public Film addFilm(Film film) {
+    public Film filmAdd(Film film) {
         log.info("Отправлен ответ Put / films с телом {}", film);
-        return filmStorage.addFilm(film);
+        return filmStorage.filmAdd(film);
     }
 
-    public Film updateFilm(Film film) {
+    public Film filmUpdate(Film film) {
         log.info("Отправлен ответ Put / films с телом {}", film);
-        return filmStorage.updateFilm(film);
+        return filmStorage.filmUpdate(film);
     }
 
     public boolean filmDelete(final Long id) {
@@ -37,9 +37,9 @@ public class FilmService {
         return filmStorage.filmDelete(id);
     }
 
-    public Collection<Film> getAllFilms() {
+    public Collection<Film> allFilms() {
         log.info("Отправлен ответ GET /films");
-        return filmStorage.getAllFilms();
+        return filmStorage.allFilms();
     }
 
     public boolean filmLike(final Long filmId, final Long userId) {
