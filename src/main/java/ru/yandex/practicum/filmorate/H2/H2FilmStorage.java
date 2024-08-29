@@ -149,7 +149,6 @@ public class H2FilmStorage implements FilmStorage {
     private Film addExtraFields(Film film) {
         Long filmId = film.getId();
         Long mpaId = film.getMpa().getId();
-        //checkCorrectMpa(mpaId);
         if (film.getGenres() != null) {
             film.getGenres().forEach(genre -> filmGenresAdd(filmId, genre.getId()));
         }
