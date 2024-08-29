@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -241,6 +242,7 @@ public class H2FilmStorage implements FilmStorage {
             return genresMap;
         });
     }
+
     private Film createFilmFromResultSet(ResultSet rs) throws SQLException {
         Film film = new Film();
         film.setId(rs.getLong("film_id"));
