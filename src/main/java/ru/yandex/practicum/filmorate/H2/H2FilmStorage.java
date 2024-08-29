@@ -17,6 +17,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import java.util.*;
 
@@ -105,45 +107,39 @@ public class H2FilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> allFilms() {
-        final String sql = "SELECT * FROM films";
+        final String sql = "SELECT f.film_id, f.film_name, f.description, f.released, f.duration, " +
+                "m.mpa_id, m.mpa_name " +
+                " FROM films f " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id ";
         SqlParameterSource parameterSource = new MapSqlParameterSource();
-        return jdbcTemplate.query(sql, parameterSource, (rs, rowNum) -> {
-            Film film = new Film();
-            film.setId(rs.getLong("film_id"));
-            film.setName(rs.getString("film_name"));
-            film.setDescription(rs.getString("description"));
-            film.setReleaseDate(rs.getDate("released").toLocalDate());
-            film.setDuration(rs.getInt("duration"));
-            Long mpaId = rs.getLong("mpa_id");
-            Optional<Mpa> ratingOptional = jdbcMpaStorage.findMpaById(mpaId);
-            ratingOptional.ifPresent(film::setMpa);
-            return addExtraFields(film);
-        });
+        Collection<Film> films = jdbcTemplate.query(sql, parameterSource, (rs, rowNum) ->
+                createFilmFromResultSet(rs));
+        Map<Long, LinkedHashSet<Genre>> filmGenresMap = getGenresFilms();
+        for (Film film : films) {
+            film.setGenres(filmGenresMap.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
+        return films;
     }
 
     @Override
     public Collection<Film> popularFilms(Long count) {
-        final String sql = "SELECT f.film_id, f.film_name, f.description, f.released, f.duration, m.mpa_id, COUNT(l.user_id) AS likes_count" +
-                " FROM films f LEFT JOIN likes l ON f.film_id = l.film_id" +
-                " LEFT JOIN mpa m ON f.mpa_id = m.mpa_id" +
-                " GROUP BY f.film_id, f.film_name, f.description, f.released, f.duration, m.mpa_id" +
-                " ORDER BY likes_count DESC LIMIT :count";
-
+        final String sql = "SELECT f.film_id, f.film_name, f.description, f.released, f.duration, " +
+                "m.mpa_id, m.mpa_name, COUNT(l.user_id) AS likes_count " +
+                "FROM films f " +
+                "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "GROUP BY f.film_id, f.film_name, f.description, f.released, f.duration, m.mpa_id, m.mpa_name " +
+                "ORDER BY likes_count DESC " +
+                "LIMIT :count";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("count", count);
-        return jdbcTemplate.query(sql, parameterSource, (rs, rowNum) -> {
-            Film film = new Film();
-            Mpa rating = new Mpa();
-            film.setId(rs.getLong("film_id"));
-            film.setName(rs.getString("film_name"));
-            film.setDescription(rs.getString("description"));
-            film.setReleaseDate(rs.getDate("released").toLocalDate());
-            film.setDuration(rs.getInt("duration"));
-            Long mpaId = rs.getLong("mpa_id");
-            Optional<Mpa> ratingOptional = jdbcMpaStorage.findMpaById(mpaId);
-            ratingOptional.ifPresent(film::setMpa);
-            return addExtraFields(film);
-        });
+        Collection<Film> films = jdbcTemplate.query(sql, parameterSource, (rs, rowNum) ->
+                createFilmFromResultSet(rs));
+        Map<Long, LinkedHashSet<Genre>> filmGenresMap = getGenresFilms();
+        for (Film film : films) {
+            film.setGenres(filmGenresMap.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
+        return films;
     }
 
     private Film addExtraFields(Film film) {
@@ -223,6 +219,40 @@ public class H2FilmStorage implements FilmStorage {
         if (mpa.getName().isBlank() || mpa.getId() == null) {
             throw new ConditionsNotMetException("Неправильно задан рейтинг");
         }
+    }
+
+    private Map<Long, LinkedHashSet<Genre>> getGenresFilms() {
+        final String sql = "SELECT fg.film_id, g.genre_id, g.genre_name " +
+                "FROM film_genres fg " +
+                "JOIN genres g ON fg.genre_id = g.genre_id";
+
+        return jdbcTemplate.query(sql, rs -> {
+            Map<Long, LinkedHashSet<Genre>> genresMap = new LinkedHashMap<>();
+            while (rs.next()) {
+                long filmId = rs.getLong("film_id");
+                long genreId = rs.getLong("genre_id");
+                String genreName = rs.getString("genre_name");
+                Genre genre = new Genre(genreId, genreName);
+                if (!genresMap.containsKey(filmId)) {
+                    genresMap.put(filmId, new LinkedHashSet<>());
+                }
+                genresMap.get(filmId).add(genre);
+            }
+            return genresMap;
+        });
+    }
+    private Film createFilmFromResultSet(ResultSet rs) throws SQLException {
+        Film film = new Film();
+        film.setId(rs.getLong("film_id"));
+        film.setName(rs.getString("film_name"));
+        film.setDescription(rs.getString("description"));
+        film.setReleaseDate(rs.getDate("released").toLocalDate());
+        film.setDuration(rs.getInt("duration"));
+        Mpa mpa = new Mpa();
+        mpa.setId(rs.getLong("mpa_id"));
+        mpa.setName(rs.getString("mpa_name"));
+        film.setMpa(mpa);
+        return film;
     }
 }
 
