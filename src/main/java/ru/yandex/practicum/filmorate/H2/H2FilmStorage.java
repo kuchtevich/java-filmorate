@@ -150,9 +150,6 @@ public class H2FilmStorage implements FilmStorage {
         Long filmId = film.getId();
         Long mpaId = film.getMpa().getId();
         checkCorrectMpa(mpaId);
-        if (film.getGenres() != null) {
-            film.getGenres().forEach(genre -> filmGenresAdd(filmId, genre.getId()));
-        }
         Optional<Mpa> filmMpa = jdbcMpaStorage.findMpaById(mpaId);
         Set<Genre> filmGenres = new LinkedHashSet<>(getAllFilmGenresById(filmId));
         film.setMpa(filmMpa.orElseThrow(() -> new ConditionsNotMetException("Рейтинг с ID " + mpaId + " не найден")));
